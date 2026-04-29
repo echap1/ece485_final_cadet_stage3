@@ -24,19 +24,26 @@ architecture Behavioral of hazard_detection_unit is
    signal double_stall : STD_LOGIC := '0';
 begin
     -- would opcodes of current and previous instructions be useful?
-    opcode <= instr(<define bit> downto <define bit>));
-    if_id_opcode <= if_id_instr(<define bit> downto <define bit>));
-    process(if_id_mem_read, if_id_rd, rs1, rs2, if_id_opcode, opcode, stall_counter -- any others?)
-    begin      
+    opcode <= instr(6 downto 0);
+    if_id_opcode <= if_id_instr(6 downto 0);
+    process(reset, if_id_mem_read, if_id_load_addr, if_id_rd, rs1, rs2, if_id_opcode, opcode, stall_counter)
+    begin
         if (reset = '1') then
             start_stall <= '0';
         -- stall cases, dependency on a (1)load from memory, (2) load_addr, (3) add, (4) addi/subi
-        elsif (<what control signals and opcodes?>) then -- single stall data dependency case
+        elsif ((if_id_opcode = "0000011" or  -- LW
+                if_id_opcode = "0010111" or  -- load_addr
+                if_id_opcode = "0110011" or  -- ADD
+                if_id_opcode = "0010011")    -- ADDI/SUBI
+               and if_id_rd /= "00000"  -- dest register is not zero
+               and (rs1 = if_id_rd or rs2 = if_id_rd)  -- dest register matches rs1 or rs2
+               and stall_counter = 0) then -- single stall data dependency case
                 start_stall <= '1';
         elsif -- stall cases for branch or jump, needing time to calulate branch address, etc
-              (<what control signals and opcodes?>) then 
-                start_stall <= '1';      
-        else        
+              ((if_id_opcode = "1100011" or if_id_opcode = "1101111")
+               and stall_counter = 0) then
+                start_stall <= '1';
+        else
                 start_stall <= '0';
         end if;    
         

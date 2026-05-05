@@ -160,7 +160,7 @@ begin
             -- <add other registers>
 
         elsif rising_edge(clk) then
-            if (start_stall = '1' or stall_counter > 0) then  -- if stall, then insert a NOP
+            if (start_stall = '1' or stall_counter = 3 or stall_counter = 2) then  -- if stall, then insert a NOP
                 if_id_reg_write <= '0';
                 if_id_alu_src <= '0';
                 if_id_mem_read <= '0';

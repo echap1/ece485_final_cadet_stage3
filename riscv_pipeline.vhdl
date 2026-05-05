@@ -528,7 +528,7 @@ begin
 
     next_pc <=  std_logic_vector(signed(ex_mem_npc) + signed(ex_mem_imm)) when (ex_mem_branch = '1' and not_equal_flag = '1') else -- branch case
                 std_logic_vector(signed(ex_mem_npc) + signed(ex_mem_imm)) when (ex_mem_jump = '1') else  -- jump case
-                pc when (start_stall = '1' or stall_counter > 0) else   -- stall case
+                pc when (start_stall = '1' or stall_counter = 3 or stall_counter = 2) else   -- stall case
                 NPC; -- note: this happens during IF !!! 1st two during MEM
 
     -- MEM/WB pipeline register
